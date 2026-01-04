@@ -1,6 +1,9 @@
 # ShoeAholic
 ![ASP.NET Core](https://img.shields.io/badge/ASP.NET%20Core-MVC-blue)
+![Entity Framework Core](https://img.shields.io/badge/EF%20Core-ORM-green)
 ![SQL Server](https://img.shields.io/badge/SQL%20Server-Database-red)
+![Bootstrap](https://img.shields.io/badge/Bootstrap-Frontend-purple)
+
 
 
 
