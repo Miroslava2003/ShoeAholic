@@ -1,4 +1,7 @@
 # ShoeAholic
+![ASP.NET Core](https://img.shields.io/badge/ASP.NET%20Core-MVC-blue)
+![EF Core](https://img.shields.io/badge/EF%20Core-ORM-green)
+
 
 ASP.NET Core MVC web application for managing shoes.
 
