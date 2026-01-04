@@ -21,3 +21,12 @@ ASP.NET Core MVC web application for managing shoes.
 ## Purpose
 University project / Internship portfolio
 
+## Project Documentation
+The PDF contains:
+- project overview
+- system architecture
+- database design
+- UML diagrams
+- implemented functionalities
+
+📄 [Project Description (PDF)](docs/ShoeAholic_Project_Description.pdf)
