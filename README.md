@@ -34,3 +34,10 @@ The PDF contains:
 - implemented functionalities
 
 📄 [Project Description (PDF)](ShoeAholic_Project_Description.pdf)
+
+## How to run
+1. Clone the repository
+2. Update connection string in appsettings.Development.json
+3. Run `Update-Database`
+4. Press F5
+
