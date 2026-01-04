@@ -29,4 +29,4 @@ The PDF contains:
 - UML diagrams
 - implemented functionalities
 
-📄 [Project Description (PDF)](docs/ShoeAholic_Project_Description.pdf)
+📄 [Project Description (PDF)](ShoeAholic_Project_Description.pdf)
