@@ -1,0 +1,85 @@
+﻿@model ShoeAholic.Models.ViewModels.ProfileViewModel
+@{
+    ViewData["Title"] = "Моят профил";
+}
+
+<div class="container my-5">
+    <h2 class="mb-4"><i class="bi bi-person-circle"></i> Моят профил</h2>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">@TempData["Success"]<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+    }
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white"><h5 class="mb-0"><i class="bi bi-person"></i> Лична информация</h5></div>
+                <div class="card-body">
+                    <div class="row mb-3"><div class="col-sm-4 fw-bold">Име:</div><div class="col-sm-8">@Model.FirstName @Model.LastName</div></div>
+                    <div class="row mb-3"><div class="col-sm-4 fw-bold">Имейл:</div><div class="col-sm-8">@Model.Email</div></div>
+                    <div class="row mb-3"><div class="col-sm-4 fw-bold">Телефон:</div><div class="col-sm-8">@Model.Phone</div></div>
+                    <hr />
+                    <div class="d-flex gap-2">
+                        <a asp-action="Edit" class="btn btn-primary"><i class="bi bi-pencil"></i> Редактирай профил</a>
+                        <a asp-action="ChangePassword" class="btn btn-outline-secondary"><i class="bi bi-key"></i> Смени парола</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light"><h5 class="mb-0"><i class="bi bi-graph-up"></i> Статистики</h5></div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-6 mb-3">
+                            <div class="border rounded p-3">
+                                <i class="bi bi-bag-check display-4 text-primary"></i>
+                                <h3 class="mt-2">@Model.OrdersCount</h3>
+                                <p class="text-muted mb-0">Поръчки</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="border rounded p-3">
+                                <i class="bi bi-currency-exchange display-4 text-success"></i>
+                                <h3 class="mt-2">@Model.TotalSpent.ToString("F2") лв.</h3>
+                                <p class="text-muted mb-0">Обща сума</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light"><h5 class="mb-0"><i class="bi bi-list-ul"></i> Бързи връзки</h5></div>
+                <div class="list-group list-group-flush">
+                    <a asp-controller="Orders" asp-action="MyOrders" class="list-group-item list-group-item-action"><i class="bi bi-box-seam"></i> Моите поръчки</a>
+                    <a asp-controller="Cart" asp-action="Index" class="list-group-item list-group-item-action"><i class="bi bi-cart3"></i> Моята количка</a>
+                    <a asp-action="ChangePassword" class="list-group-item list-group-item-action"><i class="bi bi-key"></i> Смени парола</a>
+                    <a asp-action="Edit" class="list-group-item list-group-item-action"><i class="bi bi-pencil"></i> Редактирай профил</a>
+                </div>
+            </div>
+
+            @if (!User.IsInRole("Admin"))
+            {
+                <div class="card shadow-sm border-danger">
+                    <div class="card-header bg-danger text-white"><h6 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Опасна зона</h6></div>
+                    <div class="card-body">
+                        <p class="text-muted small mb-2">Изтриването на профила е необратимо действие.</p>
+                        <a asp-action="Delete" class="btn btn-danger btn-sm w-100"><i class="bi bi-trash"></i> Изтрий профил</a>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="card shadow-sm border-warning">
+                    <div class="card-header bg-warning text-dark"><h6 class="mb-0"><i class="bi bi-shield-lock"></i> Администраторски профил</h6></div>
+                    <div class="card-body">
+                        <p class="text-muted small mb-0"><i class="bi bi-info-circle"></i> Администраторските профили не могат да бъдат изтрити.</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

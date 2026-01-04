@@ -1,0 +1,300 @@
+﻿@model ShoeAholic.Models.Shoe
+@using System.Security.Claims
+@inject ShoeAholic.Data.ShoeAholicDbContext _context
+
+<div class="container">
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+            <i class="bi bi-check-circle"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Info"] != null)
+    {
+        <div class="alert alert-info alert-dismissible fade show mt-3" role="alert">
+            <i class="bi bi-info-circle"></i> @TempData["Info"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+            <i class="bi bi-exclamation-triangle"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row mt-4">
+
+        <div class="mb-3">
+            <a href="javascript:history.back()" class="btn-back">
+                <i class="bi bi-arrow-left"></i>
+            </a>
+        </div>
+
+        <div class="col-md-6">
+            <div class="image-wrapper">
+
+                <img id="mainImage"
+                     src="@(Model.Images.FirstOrDefault()?.ImageUrl ?? "/images/no-image.png")"
+                     class="main-product-image"
+                     onclick="openImageModal()" />
+
+                <button type="button" class="img-arrow left" onclick="prevImage(event)">‹</button>
+                <button type="button" class="img-arrow right" onclick="nextImage(event)">›</button>
+
+            </div>
+
+            <div class="d-flex gap-2 mt-3">
+                @{
+                    var imagesList = Model.Images.ToList();
+                }
+
+                @for (int i = 0; i < imagesList.Count; i++)
+                {
+                    <img src="@imagesList[i].ImageUrl"
+                         class="img-thumbnail thumb-image"
+                         data-index="@i"
+                         style="width:80px;height:80px;object-fit:cover;cursor:pointer;" />
+                }
+            </div>
+        </div>
+
+        <div class="col-md-6">
+
+            <h2>@Model.Brand @Model.Model</h2>
+            <h4 class="product-price mb-3">@Model.Price лв.</h4>
+
+            <hr />
+
+            <form id="addToCartForm" asp-controller="Cart" asp-action="Add" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="shoeId" value="@Model.Id" />
+
+                <div class="mb-3">
+                    <label class="form-label">Размер</label>
+                    <select name="sizeId" class="form-select" required>
+                        <option value="">Избери размер</option>
+                        @foreach (var size in Model.Sizes.Where(s => s.Quantity > 0))
+                        {
+                            <option value="@size.Id">@size.Size.ToString("0.#")</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Количество</label>
+                    <input type="number" name="quantity" value="1" min="1" class="form-control" required />
+                </div>
+
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <button type="submit" class="btn btn-accent w-100 mt-3 mb-3">
+                        Добави в количка
+                    </button>
+                }
+                else
+                {
+                    <button type="button" class="btn btn-accent w-100 mt-3 mb-3" onclick="openAuthModal()">
+                        Добави в количка
+                    </button>
+                }
+            </form>
+
+            @if (User.Identity.IsAuthenticated)
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var isInWishlist = _context.WishlistItems.Any(w => w.UserId == userId && w.ShoeId == Model.Id);
+
+                if (isInWishlist)
+                {
+                    <form asp-controller="Wishlist" asp-action="RemoveByShoeId" method="post" class="w-100">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="shoeId" value="@Model.Id" />
+                        <button type="submit" class="favorite-btn active w-100">
+                            <i class="bi bi-heart-fill"></i>
+                            <span>Премахни от любими</span>
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <form asp-controller="Wishlist" asp-action="Add" method="post" class="w-100">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="shoeId" value="@Model.Id" />
+                        <button type="submit" class="favorite-btn w-100">
+                            <i class="bi bi-heart"></i>
+                            <span>Добави в любими</span>
+                        </button>
+                    </form>
+                }
+            }
+            else
+            {
+                <button type="button" class="favorite-btn w-100" onclick="openAuthModal()">
+                    <i class="bi bi-heart"></i>
+                    Добави в любими
+                </button>
+            }
+
+        </div>
+    </div>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(Model.Description))
+{
+    <div class="product-description mt-5">
+        <h5>Описание</h5>
+        <p>@Model.Description</p>
+    </div>
+}
+
+<div id="imageModal" class="image-modal" onclick="closeImageModal(event)">
+    <span class="close-modal">&times;</span>
+    <img id="modalImage" class="modal-image">
+    <button class="img-arrow left modal-arrow" onclick="prevImage(event)">‹</button>
+    <button class="img-arrow right modal-arrow" onclick="nextImage(event)">›</button>
+</div>
+
+<div class="modal fade" id="authModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Необходим е акаунт</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <p>За да добавяте продукти в количка или в любими, е необходимо да влезете в профила си или да се регистрирате.</p>
+            </div>
+
+            <div class="modal-footer">
+                <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Context.Request.Path" class="btn btn-accent">Вход</a>
+                <a asp-area="Identity" asp-page="/Account/Register" asp-route-returnUrl="@Context.Request.Path" class="btn btn-outline-accent">Регистрация</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addedToCartModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Добавено в количката</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                Продуктът беше успешно добавен в количката.
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    Продължи пазаруването
+                </button>
+                <a asp-controller="Cart" asp-action="Index" class="btn btn-accent">
+                    Към количката
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const images = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Images.Select(i => i.ImageUrl)));
+        let currentIndex = 0;
+
+        const mainImage = document.getElementById('mainImage');
+        const modal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+
+        function showImage(index) {
+            mainImage.src = images[index];
+            modalImage.src = images[index];
+        }
+
+        function nextImage(e) {
+            e.stopPropagation();
+            currentIndex = (currentIndex + 1) % images.length;
+            showImage(currentIndex);
+        }
+
+        function prevImage(e) {
+            e.stopPropagation();
+            currentIndex = (currentIndex - 1 + images.length) % images.length;
+            showImage(currentIndex);
+        }
+
+        document.querySelectorAll('.thumb-image').forEach(img => {
+            img.addEventListener('click', () => {
+                currentIndex = img.dataset.index;
+                showImage(currentIndex);
+            });
+        });
+
+        function openImageModal() {
+            modal.classList.add('active');
+            modalImage.src = images[currentIndex];
+        }
+
+        function closeImageModal(e) {
+            if (e.target === modal || e.target.classList.contains('close-modal')) {
+                modal.classList.remove('active');
+            }
+        }
+
+        function openAuthModal() {
+            new bootstrap.Modal(document.getElementById('authModal')).show();
+        }
+
+        document.getElementById('addToCartForm')?.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const token = this.querySelector('input[name="__RequestVerificationToken"]').value;
+
+            fetch(this.action, {
+                method: 'POST',
+                headers: {
+                    'RequestVerificationToken': token,
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
+                .then(r => r.json())
+                .then(d => {
+                    if (d.success) {
+                        new bootstrap.Modal(document.getElementById('addedToCartModal')).show();
+                    } else {
+                        showErrorAlert(d.message);
+                    }
+                })
+                .catch(() => showErrorAlert('Възникна проблем. Опитайте отново.'));
+        });
+
+        function showErrorAlert(message) {
+            document.querySelectorAll('.cart-error-alert').forEach(a => a.remove());
+
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-danger alert-dismissible fade show cart-error-alert mt-3';
+            alert.innerHTML = `
+                    <i class="bi bi-exclamation-triangle"></i> ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+
+            const container = document.querySelector('.container');
+            container.insertBefore(alert, container.firstChild);
+            alert.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    </script>
+}

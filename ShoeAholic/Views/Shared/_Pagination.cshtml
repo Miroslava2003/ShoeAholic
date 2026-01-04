@@ -1,0 +1,64 @@
+﻿@{
+    var currentPage = ViewBag.CurrentPage ?? 1;
+    var totalPages = ViewBag.TotalPages ?? 1;
+    var pageSize = ViewBag.PageSize ?? 12;
+    var totalItems = ViewBag.TotalItems ?? 0;
+    var hasPrevious = ViewBag.HasPreviousPage ?? false;
+    var hasNext = ViewBag.HasNextPage ?? false;
+    var category = ViewBag.CurrentCategory as string;
+    var selectedBrands = ViewBag.SelectedBrands as List<string> ?? new List<string>();
+    var selectedColors = ViewBag.SelectedColors as List<string> ?? new List<string>();
+    var selectedSizes = ViewBag.SelectedSizes as List<decimal> ?? new List<decimal>();
+    var minPrice = ViewBag.CurrentMinPrice;
+    var maxPrice = ViewBag.CurrentMaxPrice;
+    var sortBy = ViewBag.CurrentSortBy as string;
+    var startPage = Math.Max(1, currentPage - 2);
+    var endPage = Math.Min(totalPages, currentPage + 2);
+}
+
+@if (totalPages > 1)
+{
+    <nav>
+        <ul class="pagination justify-content-center">
+            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                <a class="page-link" href="@Url.Action("Index", new { category, brands = selectedBrands, colors = selectedColors, sizes = selectedSizes, minPrice, maxPrice, sortBy, pageSize, page = 1 })"><i class="bi bi-chevron-double-left"></i></a>
+            </li>
+            <li class="page-item @(!hasPrevious ? "disabled" : "")">
+                <a class="page-link" href="@Url.Action("Index", new { category, brands = selectedBrands, colors = selectedColors, sizes = selectedSizes, minPrice, maxPrice, sortBy, pageSize, page = currentPage - 1 })"><i class="bi bi-chevron-left"></i></a>
+            </li>
+            @for (int i = startPage; i <= endPage; i++)
+            {
+                <li class="page-item @(i == currentPage ? "active" : "")">
+                    <a class="page-link" href="@Url.Action("Index", new { category, brands = selectedBrands, colors = selectedColors, sizes = selectedSizes, minPrice, maxPrice, sortBy, pageSize, page = i })">@i</a>
+                </li>
+            }
+            <li class="page-item @(!hasNext ? "disabled" : "")">
+                <a class="page-link" href="@Url.Action("Index", new { category, brands = selectedBrands, colors = selectedColors, sizes = selectedSizes, minPrice, maxPrice, sortBy, pageSize, page = currentPage + 1 })"><i class="bi bi-chevron-right"></i></a>
+            </li>
+            <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                <a class="page-link" href="@Url.Action("Index", new { category, brands = selectedBrands, colors = selectedColors, sizes = selectedSizes, minPrice, maxPrice, sortBy, pageSize, page = totalPages })"><i class="bi bi-chevron-double-right"></i></a>
+            </li>
+        </ul>
+    </nav>
+}
+
+<style>
+    .pagination .page-item.active .page-link {
+        background-color: #9528de !important;
+        border-color: #9528de !important;
+        color: white !important;
+    }
+
+    .pagination .page-link {
+        color: #9528de;
+    }
+
+        .pagination .page-link:hover {
+            color: #7a1fb8;
+            background-color: #f8f9fa;
+        }
+
+    .pagination .page-item.disabled .page-link {
+        color: #6c757d;
+    }
+</style>

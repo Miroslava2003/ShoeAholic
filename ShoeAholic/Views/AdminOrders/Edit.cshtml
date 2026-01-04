@@ -1,0 +1,145 @@
+﻿@model ShoeAholic.Models.Order
+@using ShoeAholic.Models.Enums
+@{
+    ViewData["Title"] = $"Редактиране на поръчка #{Model.Id}";
+}
+
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-pencil"></i> Редактиране на поръчка #@Model.Id</h2>
+        <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Назад</a>
+    </div>
+
+    <form asp-action="Edit" method="post">
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="UserId" />
+        <input type="hidden" asp-for="CreatedOn" />
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow-sm mb-3">
+                    <div class="card-header bg-light"><h5 class="mb-0"><i class="bi bi-person"></i> Информация за клиента</h5></div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="FullName" class="form-label">Име</label>
+                                <input asp-for="FullName" class="form-control" />
+                                <span asp-validation-for="FullName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Phone" class="form-label">Телефон</label>
+                                <input asp-for="Phone" class="form-control" />
+                                <span asp-validation-for="Phone" class="text-danger"></span>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="Address" class="form-label">Адрес за доставка</label>
+                                <textarea asp-for="Address" class="form-control" rows="2"></textarea>
+                                <span asp-validation-for="Address" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm mb-3">
+                    <div class="card-header bg-light"><h5 class="mb-0"><i class="bi bi-truck"></i> Доставка и плащане</h5></div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="DeliveryType" class="form-label">Начин на доставка</label>
+                                <select asp-for="DeliveryType" class="form-select">
+                                    <option value="1">До офис</option>
+                                    <option value="2">До адрес</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="PaymentType" class="form-label">Начин на плащане</label>
+                                <select asp-for="PaymentType" class="form-select">
+                                    <option value="1">Наложен платеж</option>
+                                    <option value="2">Карта</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm mb-3">
+                    <div class="card-header bg-light"><h5 class="mb-0"><i class="bi bi-gear"></i> Статус и бележки</h5></div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="Status" class="form-label">Статус</label>
+                                <select asp-for="Status" class="form-select">
+                                    <option value="1">Нова поръчка</option>
+                                    <option value="2">В обработка</option>
+                                    <option value="3">Изпратена</option>
+                                    <option value="4">Доставена</option>
+                                    <option value="5">Отказана</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="AdminNotes" class="form-label">Бележки от администратор</label>
+                                <textarea asp-for="AdminNotes" class="form-control" rows="3" placeholder="Вътрешни бележки..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card shadow-sm mb-3">
+                    <div class="card-header bg-light"><h5 class="mb-0"><i class="bi bi-cash-stack"></i> Ценова информация</h5></div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="SubTotal" class="form-label">Сума на продуктите</label>
+                            <div class="input-group">
+                                <input asp-for="SubTotal" type="number" step="0.01" class="form-control" />
+                                <span class="input-group-text">лв.</span>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="DeliveryPrice" class="form-label">Цена на доставка</label>
+                            <div class="input-group">
+                                <input asp-for="DeliveryPrice" type="number" step="0.01" class="form-control" />
+                                <span class="input-group-text">лв.</span>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="TotalPrice" class="form-label">Обща сума</label>
+                            <div class="input-group">
+                                <input asp-for="TotalPrice" type="number" step="0.01" class="form-control" />
+                                <span class="input-group-text">лв.</span>
+                            </div>
+                        </div>
+                        <div class="alert alert-info mb-0"><small><i class="bi bi-info-circle"></i> Обикновено общата сума = продукти + доставка</small></div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm mb-3">
+                    <div class="card-header bg-light"><h6 class="mb-0"><i class="bi bi-bag"></i> Поръчани продукти</h6></div>
+                    <div class="card-body">
+                        <p class="text-muted mb-2"><small>Продуктите не могат да се редактират тук.</small></p>
+                        @foreach (var item in Model.Items)
+                        {
+                            <div class="d-flex justify-content-between mb-2">
+                                <small><strong>@item.Shoe?.Brand @item.Shoe?.Model</strong><br />Размер: @item.Size | @item.Quantity бр.</small>
+                                <small class="text-end">@((item.Price * item.Quantity).ToString("F2")) лв.</small>
+                            </div>
+                            <hr class="my-2" />
+                        }
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-success btn-lg"><i class="bi bi-check-circle"></i> Запази промените</button>
+                    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary"><i class="bi bi-x-circle"></i> Отказ</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

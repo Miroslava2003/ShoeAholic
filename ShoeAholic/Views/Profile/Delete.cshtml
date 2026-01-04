@@ -1,0 +1,47 @@
+﻿@{
+    ViewData["Title"] = "Изтрий профил";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow border-danger">
+                <div class="card-header bg-danger text-white"><h4 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Изтрий профил</h4></div>
+                <div class="card-body p-4">
+                    <div class="alert alert-danger">
+                        <h5><i class="bi bi-exclamation-octagon"></i> ВНИМАНИЕ!</h5>
+                        <p class="mb-0">Това действие е <strong>необратимо</strong>. След изтриване на профила:</p>
+                        <ul class="mt-2 mb-0">
+                            <li>Ще загубите достъп до акаунта си</li>
+                            <li>Личните ви данни ще бъдат изтрити</li>
+                            <li>Количката ви ще бъде изчистена</li>
+                            <li>Историята на поръчките ще остане в системата</li>
+                        </ul>
+                    </div>
+                    <form asp-action="DeleteConfirmed" method="post">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">За да потвърдите, моля въведете вашата парола:</label>
+                            <input type="password" name="password" class="form-control" required placeholder="Парола" />
+                            <div asp-validation-summary="All" class="text-danger mt-2"></div>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="confirmDelete" required>
+                            <label class="form-check-label" for="confirmDelete">Разбирам че това действие е необратимо</label>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger btn-lg" onclick="return confirm('Сигурни ли сте?')"><i class="bi bi-trash"></i> Изтрий профила завинаги</button>
+                            <a asp-action="Index" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Отказ</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="text-center mt-3"><small class="text-muted"><i class="bi bi-info-circle"></i> Ако имате проблеми с профила си, свържете се с нас вместо да го изтриете.</small></div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

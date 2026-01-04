@@ -1,0 +1,72 @@
+﻿@{
+    ViewData["Title"] = "Начало";
+}
+
+<style>
+    .hero-carousel img {
+        width: 100vw;
+        height: 650px;
+        object-fit: cover;
+        display: block;
+        cursor: pointer;
+        transition: opacity 0.3s ease;
+    }
+
+        .hero-carousel img:hover {
+            opacity: 0.9;
+        }
+
+    .fullwidth-wrapper {
+        width: 100vw;
+        position: relative;
+        left: 50%;
+        right: 50%;
+        margin-left: -50vw;
+        margin-right: -50vw;
+    }
+
+    .carousel-item {
+        transition: transform 0.8s ease-in-out;
+    }
+
+        .carousel-item a {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+</style>
+
+<div class="fullwidth-wrapper">
+    <div id="heroCarousel" class="carousel slide hero-carousel" data-bs-ride="carousel" data-bs-interval="2000">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <a asp-controller="Products" asp-action="Details" asp-route-id="39">
+                    <img src="~/images/shoes/nikeshox.png" class="carousel-image" alt="Nike Shox">
+                </a>
+            </div>
+            <div class="carousel-item">
+                <a asp-controller="Products" asp-action="Details" asp-route-id="3">
+                    <img src="~/images/shoes/1.png" class="carousel-image" alt="Shoe 1">
+                </a>
+            </div>
+            <div class="carousel-item">
+                <a asp-controller="Products" asp-action="Details" asp-route-id="40">
+                    <img src="~/images/shoes/nb back.png" class="carousel-image" alt="New Balance">
+                </a>
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
+        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const carouselElement = document.querySelector('#heroCarousel');
+            if (carouselElement) {
+                new bootstrap.Carousel(carouselElement, { interval: 2000, ride: 'carousel', pause: false, wrap: true });
+            }
+        });
+    </script>
+}

@@ -1,0 +1,73 @@
+﻿@model IEnumerable<ShoeAholic.Models.Shoe>
+@{
+    ViewData["Title"] = "Резултати от търсене";
+    var searchQuery = ViewData["SearchQuery"]?.ToString();
+    var resultsCount = (int)(ViewData["ResultsCount"] ?? 0);
+}
+
+<div class="container my-5">
+    <div class="mb-4">
+        <h2><i class="bi bi-search"></i> Резултати от търсене</h2>
+        <p class="text-muted">Търсене за: <strong>"@searchQuery"</strong> - Намерени: <strong>@resultsCount</strong> продукта</p>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> Не бяха намерени продукти за "<strong>@searchQuery</strong>".
+        </div>
+        <div class="text-center py-4">
+            <h4>Предложения:</h4>
+            <ul class="list-unstyled">
+                <li>Проверете правописа</li>
+                <li>Опитайте с по-общи думи</li>
+                <li>Опитайте с различни ключови думи</li>
+            </ul>
+            <a asp-controller="Products" asp-action="Index" class="btn btn-primary mt-3"><i class="bi bi-shop"></i> Разгледай всички продукти</a>
+        </div>
+    }
+    else
+    {
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>Показани: <strong>@resultsCount</strong> резултата</div>
+            <div><a asp-controller="Products" asp-action="Index" class="btn btn-outline-secondary btn-sm"><i class="bi bi-x-circle"></i> Изчисти търсене</a></div>
+        </div>
+
+        <div class="row g-4">
+            @foreach (var shoe in Model)
+            {
+                <div class="col-md-4 col-lg-3">
+                    <div class="card h-100 shadow-sm">
+                        <a asp-controller="Products" asp-action="Details" asp-route-id="@shoe.Id">
+                            @if (shoe.Images?.Any() ?? false)
+                            {
+                                <img src="@shoe.Images.First().ImageUrl" class="card-img-top" alt="@shoe.Brand @shoe.Model" style="height: 250px; object-fit: cover;">
+                            }
+                            else
+                            {
+                                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 250px;"><i class="bi bi-image text-muted" style="font-size: 3rem;"></i></div>
+                            }
+                        </a>
+                        <div class="card-body text-center">
+                            <h6 class="card-title">@shoe.Brand</h6>
+                            <p class="card-text text-muted">@shoe.Model</p>
+                            <p class="card-text mb-3"><strong style="color: #9528de;" class="fs-5">@shoe.Price.ToString("F2") лв.</strong></p>
+                            <span class="badge" style="background-color: #9528de; color: white;">@(shoe.Category == "Men" ? "Мъже" : shoe.Category == "Women" ? "Жени" : shoe.Category)</span>
+                            @if (shoe.Sizes?.Any(s => s.Quantity > 0) ?? false)
+                            {
+                                <div class="mt-2"><small class="text-success"><i class="bi bi-check-circle"></i> Налично</small></div>
+                            }
+                            else
+                            {
+                                <div class="mt-2"><small class="text-danger"><i class="bi bi-x-circle"></i> Изчерпано</small></div>
+                            }
+                        </div>
+                        <div class="card-footer bg-white border-0">
+                            <a asp-controller="Products" asp-action="Details" asp-route-id="@shoe.Id" class="btn btn-outline-primary w-100">Виж детайли</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

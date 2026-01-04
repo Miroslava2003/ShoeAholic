@@ -1,0 +1,228 @@
+﻿@model IEnumerable<ShoeAholic.Models.Shoe>
+@{
+    ViewData["Title"] = "Продукти";
+    var category = ViewBag.CurrentCategory as string;
+    var selectedBrands = ViewBag.SelectedBrands as List<string> ?? new List<string>();
+    var selectedColors = ViewBag.SelectedColors as List<string> ?? new List<string>();
+    var selectedSizes = ViewBag.SelectedSizes as List<decimal> ?? new List<decimal>();
+}
+
+<div class="container-fluid my-4 ps-0">
+    <div class="row">
+        <div class="col-lg-3 mb-4">
+            <div class="card shadow-sm" style="background-color: #9528de; color: white;">
+                <div class="card-header border-0"><h5 class="mb-0"><i class="bi bi-funnel"></i> Филтри</h5></div>
+                <div class="card-body bg-white" style="color: #333;">
+                    <form method="get" id="filterForm">
+                        <input type="hidden" name="category" value="@category" />
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold"><i class="bi bi-tag"></i> Марка</label>
+                            <div class="filter-checkboxes">
+                                @foreach (var brand in ViewBag.Brands as List<string>)
+                                {
+                                    <div class="form-check">
+                                        <input class="form-check-input filter-checkbox" type="checkbox" name="brands" value="@brand" id="brand_@brand" @(selectedBrands.Contains(brand) ? "checked" : "") />
+                                        <label class="form-check-label" for="brand_@brand">@brand</label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold"><i class="bi bi-palette"></i> Цвят</label>
+                            <div class="filter-checkboxes">
+                                @foreach (var color in ViewBag.Colors as List<string>)
+                                {
+                                    <div class="form-check">
+                                        <input class="form-check-input filter-checkbox" type="checkbox" name="colors" value="@color" id="color_@color" @(selectedColors.Contains(color) ? "checked" : "") />
+                                        <label class="form-check-label" for="color_@color">@color</label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold"><i class="bi bi-rulers"></i> Размер</label>
+                            <div class="filter-checkboxes">
+                                @foreach (var size in ViewBag.Sizes as List<decimal>)
+                                {
+                                    var sizeValue = size.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                                    <div class="form-check">
+                                        <input class="form-check-input filter-checkbox" type="checkbox" name="sizesStr" value="@sizeValue" id="size_@sizeValue" @(selectedSizes.Contains(size) ? "checked" : "") />
+                                        <label class="form-check-label" for="size_@sizeValue">@size</label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold"><i class="bi bi-cash"></i> Цена (лв.)</label>
+                            <div class="row g-2">
+                                <div class="col-6"><input type="number" name="minPrice" class="form-control price-input" placeholder="От" step="0.01" value="@ViewBag.CurrentMinPrice" /></div>
+                                <div class="col-6"><input type="number" name="maxPrice" class="form-control price-input" placeholder="До" step="0.01" value="@ViewBag.CurrentMaxPrice" /></div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold"><i class="bi bi-sort-down"></i> Сортиране</label>
+                            <select name="sortBy" class="form-select" onchange="document.getElementById('filterForm').submit()">
+                                <option value="default" selected="@(ViewBag.CurrentSortBy == "default")">По подразбиране</option>
+                                <option value="price_asc" selected="@(ViewBag.CurrentSortBy == "price_asc")">Цена: Ниска → Висока</option>
+                                <option value="price_desc" selected="@(ViewBag.CurrentSortBy == "price_desc")">Цена: Висока → Ниска</option>
+                                <option value="name_asc" selected="@(ViewBag.CurrentSortBy == "name_asc")">Име: А → Я</option>
+                                <option value="name_desc" selected="@(ViewBag.CurrentSortBy == "name_desc")">Име: Я → А</option>
+                            </select>
+                        </div>
+
+                        <div class="d-grid"><a href="@Url.Action("Index", new { category })" class="btn btn-outline-secondary"><i class="bi bi-x-circle"></i> Изчисти филтрите</a></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    @if (!string.IsNullOrEmpty(category))
+                    {
+                        <span>@(category == "Men" ? "Мъже" : category == "Women" ? "Жени" : category)</span>
+                    }
+                    else
+                    {
+                        <span>Всички продукти</span>
+                    }
+                </h2>
+                <div class="d-flex align-items-center">
+                    <span class="text-muted me-2">На страница:</span>
+                    <select class="form-select form-select-sm" style="width: auto;" onchange="window.location.href = this.value">
+                        @foreach (var size in new[] { 12, 24, 48, 96 })
+                        {
+                            <option value="@Url.Action("Index", new { category, brands = selectedBrands, colors = selectedColors, sizes = selectedSizes, minPrice = ViewBag.CurrentMinPrice, maxPrice = ViewBag.CurrentMaxPrice, sortBy = ViewBag.CurrentSortBy, pageSize = size, page = 1 })" selected="@(size == ViewBag.PageSize)">@size</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            @if (!Model.Any())
+            {
+                <div class="alert alert-info text-center py-5">
+                    <i class="bi bi-info-circle display-1"></i>
+                    <h3 class="mt-3">Няма намерени продукти</h3>
+                    <p>Опитайте с различни филтри</p>
+                    <a href="@Url.Action("Index", new { category })" class="btn btn-primary mt-3"><i class="bi bi-arrow-counterclockwise"></i> Изчисти филтрите</a>
+                </div>
+            }
+            else
+            {
+                <div class="row g-4">
+                    @foreach (var shoe in Model)
+                    {
+                        <div class="col-md-6 col-xl-3">
+                            <div class="card h-100 shadow-sm product-card">
+                                <a asp-action="Details" asp-route-id="@shoe.Id">
+                                    <div class="product-image-container position-relative" data-shoe-id="@shoe.Id">
+                                        @if (shoe.Images.Any())
+                                        {
+                                            @for (int i = 0; i < Math.Min(3, shoe.Images.Count()); i++)
+                                            {
+                                                var image = shoe.Images.Skip(i).First();
+                                                <img src="@image.ImageUrl" class="card-img-top product-image @(i == 0 ? "active" : "")" alt="@shoe.Brand @shoe.Model" data-index="@i" />
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 240px;"><i class="bi bi-image text-muted" style="font-size: 3rem;"></i></div>
+                                        }
+                                    </div>
+                                </a>
+                                <div class="card-body text-center py-2 px-3">
+                                    <h6 class="card-title mb-1">@shoe.Brand</h6>
+                                    <p class="card-text text-muted small mb-1">@shoe.Model</p>
+                                    <p class="card-text mb-2"><strong style="color: #9528de;" class="fs-5">@shoe.Price.ToString("F2") лв.</strong></p>
+                                    @if (shoe.Sizes?.Any(s => s.Quantity > 0) ?? false)
+                                    {
+                                        <small class="text-success"><i class="bi bi-check-circle"></i> Налично</small>
+                                    }
+                                    else
+                                    {
+                                        <small class="text-danger"><i class="bi bi-x-circle"></i> Изчерпано</small>
+                                    }
+                                </div>
+                                <div class="card-footer bg-white border-0">
+                                    <a asp-action="Details" asp-route-id="@shoe.Id" class="btn btn-outline-primary w-100">Виж детайли</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                @if (ViewBag.TotalItems > 0)
+                {
+                    <div class="mt-4"><partial name="_Pagination" /></div>
+                }
+            }
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('filterForm');
+            const checkboxes = document.querySelectorAll('.filter-checkbox');
+            const priceInputs = document.querySelectorAll('.price-input');
+            checkboxes.forEach(checkbox => { checkbox.addEventListener('change', function () { form.submit(); }); });
+            let priceTimeout;
+            priceInputs.forEach(input => { input.addEventListener('input', function () { clearTimeout(priceTimeout); priceTimeout = setTimeout(() => { form.submit(); }, 800); }); });
+
+            const productCards = document.querySelectorAll('.product-card');
+            productCards.forEach(card => {
+                const container = card.querySelector('.product-image-container');
+                if (!container) return;
+                const images = container.querySelectorAll('.product-image');
+                if (images.length <= 1) return;
+                let currentIndex = 0, interval = null;
+                card.addEventListener('mouseenter', function () {
+                    interval = setInterval(() => { images[currentIndex].classList.remove('active'); currentIndex = (currentIndex + 1) % images.length; images[currentIndex].classList.add('active'); }, 800);
+                });
+                card.addEventListener('mouseleave', function () {
+                    clearInterval(interval); images.forEach(img => img.classList.remove('active')); images[0].classList.add('active'); currentIndex = 0;
+                });
+            });
+        });
+    </script>
+</div>
+
+<style>
+    .product-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        overflow: hidden;
+    }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15) !important;
+        }
+
+    .product-image-container {
+        position: relative;
+        overflow: hidden;
+        height: 240px;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .product-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 240px;
+        object-fit: cover;
+        opacity: 0;
+        transition: opacity 0.5s ease;
+    }
+
+        .product-image.active {
+            opacity: 1;
+            z-index: 1;
+        }
+</style>

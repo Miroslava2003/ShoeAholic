@@ -1,0 +1,136 @@
+﻿@model IEnumerable<ShoeAholic.Models.ShoppingCartItem>
+@{
+    ViewData["Title"] = "Количка";
+    decimal total = Model.Sum(item => (item.Shoe?.Price ?? 0) * item.Quantity);
+}
+
+<div class="container my-5">
+    <h2 class="mb-4"><i class="bi bi-cart3"></i> Моята количка</h2>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">@TempData["Success"]<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">@TempData["Error"]<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5">
+            <i class="bi bi-cart-x display-1 text-muted"></i>
+            <h3 class="mt-3">Количката ви е празна</h3>
+            <p class="text-muted">Разгледайте нашите продукти и добавете артикули.</p>
+            <a asp-controller="Products" asp-action="Index" class="btn btn-primary btn-lg mt-3"><i class="bi bi-shop"></i> Към продуктите</a>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Артикули (@Model.Sum(x => x.Quantity) бр.)</h5>
+                        @foreach (var item in Model)
+                        {
+                            var imageUrl = item.Shoe?.Images?.FirstOrDefault()?.ImageUrl ?? "/images/no-image.jpg";
+                            var subtotal = (item.Shoe?.Price ?? 0) * item.Quantity;
+                            <div class="row mb-4 pb-4 border-bottom align-items-center">
+                                <div class="col-md-2 col-sm-3">
+                                    <a asp-controller="Products" asp-action="Details" asp-route-id="@item.Shoe?.Id">
+                                        <img src="@imageUrl" class="img-fluid rounded" alt="@item.Shoe?.Model" style="height: 100px; object-fit: cover; width: 100%;" />
+                                    </a>
+                                </div>
+                                <div class="col-md-4 col-sm-5">
+                                    <h6 class="mb-1"><a asp-controller="Products" asp-action="Details" asp-route-id="@item.Shoe?.Id" class="text-decoration-none text-dark">@item.Shoe?.Brand @item.Shoe?.Model</a></h6>
+                                    <p class="text-muted small mb-1"><strong>Размер:</strong> @item.ShoeSize?.Size</p>
+                                    <p class="text-muted small mb-0"><strong>Цена:</strong> @item.Shoe?.Price.ToString("F2") лв.</p>
+                                    @if (item.ShoeSize != null && item.ShoeSize.Quantity < 5)
+                                    {
+                                        <small class="text-warning"><i class="bi bi-exclamation-triangle"></i> Само @item.ShoeSize.Quantity бр. налични</small>
+                                    }
+                                </div>
+                                <div class="col-md-3 col-sm-4">
+                                    <form asp-action="UpdateQuantity" method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <div class="input-group input-group-sm">
+                                            <button type="button" class="btn btn-outline-secondary" onclick="changeQuantity(this, -1)"><i class="bi bi-dash"></i></button>
+                                            <input type="number" name="quantity" class="form-control text-center" value="@item.Quantity" min="1" max="@item.ShoeSize?.Quantity" style="max-width: 70px;" onchange="this.form.submit()">
+                                            <button type="button" class="btn btn-outline-secondary" onclick="changeQuantity(this, 1)"><i class="bi bi-plus"></i></button>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-2 col-sm-6 text-end"><h6 class="mb-2">@subtotal.ToString("F2") лв.</h6></div>
+                                <div class="col-md-1 col-sm-6 text-end">
+                                    <form asp-action="Remove" method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Сигурни ли сте?')" title="Премахни"><i class="bi bi-trash"></i></button>
+                                    </form>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <a asp-controller="Products" asp-action="Index" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Продължи пазаруването</a>
+                    <form asp-action="Clear" method="post" class="d-inline float-end">
+                        <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Сигурни ли сте?')"><i class="bi bi-trash"></i> Изчисти количката</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="bi bi-receipt"></i> Обобщение</h5>
+                        <hr />
+                        <div class="d-flex justify-content-between mb-2"><span>Артикули:</span><span>@Model.Count()</span></div>
+                        <div class="d-flex justify-content-between mb-2"><span>Общо бройки:</span><span>@Model.Sum(x => x.Quantity) бр.</span></div>
+                        <div class="d-flex justify-content-between mb-3"><span>Междинна сума:</span><strong>@total.ToString("F2") лв.</strong></div>
+                        <div class="d-flex justify-content-between mb-3 text-muted"><span>Доставка:</span><span>Изчислява се при поръчка</span></div>
+                        <hr />
+                        <div class="d-flex justify-content-between mb-4"><h5>Общо:</h5><h5 class="text-primary">@total.ToString("F2") лв.</h5></div>
+                        <div class="d-grid gap-2">
+                            <a asp-controller="Orders" asp-action="Checkout" class="btn btn-primary btn-lg"><i class="bi bi-credit-card"></i> Поръчай</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card mt-3 shadow-sm">
+                    <div class="card-body">
+                        <h6 class="card-title"><i class="bi bi-shield-check"></i> Гаранции</h6>
+                        <ul class="list-unstyled small mb-0">
+                            <li class="mb-1"><i class="bi bi-check-circle text-success"></i> Безплатна доставка над 200 лв.</li>
+                            <li class="mb-1"><i class="bi bi-check-circle text-success"></i> 14 дни право на връщане</li>
+                            <li class="mb-1"><i class="bi bi-check-circle text-success"></i> Сигурно плащане</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function changeQuantity(button, delta) {
+            const form = button.closest('form');
+            const input = form.querySelector('input[name="quantity"]');
+            const newValue = parseInt(input.value) + delta;
+            const max = parseInt(input.getAttribute('max'));
+            if (newValue >= 1 && newValue <= max) { input.value = newValue; form.submit(); }
+        }
+    </script>
+}
+
+<style>
+    .col-md-4 h6 a:hover {
+        color: #9528de !important;
+        text-decoration: underline !important;
+    }
+
+    .col-md-2 img:hover {
+        opacity: 0.85;
+        transition: opacity 0.3s ease;
+    }
+</style>

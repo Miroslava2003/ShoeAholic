@@ -1,0 +1,145 @@
+﻿@model ShoeAholic.Models.Order
+@{
+    ViewData["Title"] = $"Поръчка #{Model.Id}";
+}
+
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-file-text"></i> Поръчка #@Model.Id</h2>
+        <a asp-action="MyOrders" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Обратно към поръчките</a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">@TempData["Success"]<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">@TempData["Error"]<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+    }
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <h5 class="mb-0">Статус на поръчката</h5>
+                            @switch (Model.Status)
+                            {
+                                case ShoeAholic.Models.Enums.OrderStatus.Pending:
+                                    <span class="badge bg-warning fs-6 mt-2">В очакване</span>
+                                    break;
+                                case ShoeAholic.Models.Enums.OrderStatus.Processing:
+                                    <span class="badge bg-info fs-6 mt-2">Обработва се</span>
+                                    break;
+                                case ShoeAholic.Models.Enums.OrderStatus.Shipped:
+                                    <span class="badge bg-primary fs-6 mt-2">Изпратена</span>
+                                    break;
+                                case ShoeAholic.Models.Enums.OrderStatus.Delivered:
+                                    <span class="badge bg-success fs-6 mt-2">Доставена</span>
+                                    break;
+                                case ShoeAholic.Models.Enums.OrderStatus.Cancelled:
+                                    <span class="badge bg-danger fs-6 mt-2">Отказана</span>
+                                    break;
+                            }
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <small class="text-muted">Дата на поръчка</small><br /><strong>@Model.CreatedOn.ToString("dd.MM.yyyy HH:mm")</strong>
+                        </div>
+                    </div>
+                    @if (Model.Status == ShoeAholic.Models.Enums.OrderStatus.Pending || Model.Status == ShoeAholic.Models.Enums.OrderStatus.Processing)
+                    {
+                        <hr />
+                        <form asp-action="Cancel" asp-route-id="@Model.Id" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Сигурни ли сте?')"><i class="bi bi-x-circle"></i> Отмени поръчката</button>
+                        </form>
+                    }
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header"><h5 class="mb-0"><i class="bi bi-box-seam"></i> Поръчани артикули</h5></div>
+                <div class="card-body">
+                    @foreach (var item in Model.Items)
+                    {
+                        var imageUrl = item.Shoe?.Images?.FirstOrDefault()?.ImageUrl ?? "/images/no-image.jpg";
+                        var subtotal = item.Price * item.Quantity;
+                        <div class="row mb-3 pb-3 border-bottom align-items-center">
+                            <div class="col-md-2"><img src="@imageUrl" class="img-fluid rounded" alt="@item.Shoe?.Model" /></div>
+                            <div class="col-md-5"><h6 class="mb-1">@item.Shoe?.Brand @item.Shoe?.Model</h6><small class="text-muted">Размер: @item.Size<br />Цена: @item.Price.ToString("F2") лв./бр.</small></div>
+                            <div class="col-md-2 text-center"><small class="text-muted">Количество</small><br /><strong>@item.Quantity бр.</strong></div>
+                            <div class="col-md-3 text-end"><strong>@subtotal.ToString("F2") лв.</strong></div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header"><h6 class="mb-0">Ценово обобщение</h6></div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2"><span>Междинна сума:</span><span>@Model.SubTotal.ToString("F2") лв.</span></div>
+                    <div class="d-flex justify-content-between mb-3"><span>Доставка:</span><span>@(Model.DeliveryPrice == 0 ? "<span class=\"text-success\">Безплатна</span>" : Model.DeliveryPrice.ToString("F2") + " лв.")</span></div>
+                    <hr />
+                    <div class="d-flex justify-content-between"><h5>Общо:</h5><h5 class="text-primary">@Model.TotalPrice.ToString("F2") лв.</h5></div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header"><h6 class="mb-0"><i class="bi bi-person"></i> Данни за контакт</h6></div>
+                <div class="card-body">
+                    <p class="mb-1"><strong>@Model.FullName</strong></p>
+                    <p class="mb-1"><i class="bi bi-envelope"></i> @Model.Email</p>
+                    <p class="mb-0"><i class="bi bi-telephone"></i> @Model.Phone</p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header"><h6 class="mb-0"><i class="bi bi-geo-alt"></i> Адрес за доставка</h6></div>
+                <div class="card-body">
+                    <p class="mb-1">
+                        @if (Model.DeliveryType == ShoeAholic.Models.Enums.DeliveryType.Address)
+                        {
+                            <span class="badge bg-info mb-2">До адрес</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-info mb-2">Офис на куриер</span>
+                        }
+                    </p>
+                    <p class="mb-1">@Model.City, @Model.PostalCode</p>
+                    <p class="mb-0">@Model.Address</p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header"><h6 class="mb-0"><i class="bi bi-wallet2"></i> Плащане</h6></div>
+                <div class="card-body">
+                    @if (Model.PaymentType == ShoeAholic.Models.Enums.PaymentType.CashOnDelivery)
+                    {
+                        <p class="mb-0"><span class="badge bg-warning">Наложен платеж</span><br /><small class="text-muted">Плащате при получаване</small></p>
+                    }
+                    else
+                    {
+                        <p class="mb-1"><span class="badge bg-success">Плащане с карта</span></p>
+                        @if (Model.IsPaid)
+                        {
+                            <p class="mb-0 text-success"><i class="bi bi-check-circle-fill"></i> Платена</p>
+                            @if (!string.IsNullOrEmpty(Model.PaymentTransactionId))
+                            {
+                                <small class="text-muted">ID: @Model.PaymentTransactionId.Substring(0, 8)...</small>
+                            }
+                        }
+                        else
+                        {
+                            <p class="mb-0 text-danger"><i class="bi bi-x-circle"></i> Неплатена</p>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

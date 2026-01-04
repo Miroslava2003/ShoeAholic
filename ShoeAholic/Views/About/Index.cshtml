@@ -1,0 +1,91 @@
+﻿@{
+    ViewData["Title"] = "За нас";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <h1 class="text-center mb-5">
+                <i class="bi bi-info-circle"></i> За нас
+            </h1>
+
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body p-5">
+                    <h3 class="mb-4">Добре дошли в ShoeAholic!</h3>
+                    <p class="lead">Вашата дестинация за стилни и качествени обувки на достъпни цени.</p>
+                    <p>ShoeAholic е онлайн магазин, специализиран в продажбата на обувки за мъже и жени. Нашата мисия е да предоставим на нашите клиенти най-добрите модели от водещи световни марки като Nike, Adidas, New Balance и много други.</p>
+                    <p>Ние вярваме, че всеки заслужава да носи качествени обувки, които не само изглеждат добре, но и осигуряват комфорт през целия ден. Затова внимателно подбираме всеки модел в нашата колекция.</p>
+                </div>
+            </div>
+
+            <div class="row g-4 mb-4">
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <i class="bi bi-shield-check text-primary mb-3" style="font-size: 3rem;"></i>
+                            <h5 class="card-title">Качество и Гаранция</h5>
+                            <p class="card-text text-muted">Всички наши продукти са оригинални с гаранция за качество.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <i class="bi bi-truck text-primary mb-3" style="font-size: 3rem;"></i>
+                            <h5 class="card-title">Бърза Доставка</h5>
+                            <p class="card-text text-muted">Безплатна доставка за поръчки над 200 лв. в цялата страна.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <i class="bi bi-arrow-clockwise text-primary mb-3" style="font-size: 3rem;"></i>
+                            <h5 class="card-title">Лесно Връщане</h5>
+                            <p class="card-text text-muted">14 дни право на връщане, ако продуктът не отговаря на очакванията Ви.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-5">
+                    <h3 class="mb-4">Защо да изберете нас?</h3>
+                    <ul class="list-unstyled">
+                        <li class="mb-3"><i class="bi bi-check-circle text-success me-2"></i><strong>Широк асортимент:</strong> Над 100+ модела обувки за всеки вкус и стил</li>
+                        <li class="mb-3"><i class="bi bi-check-circle text-success me-2"></i><strong>Конкурентни цени:</strong> Най-добрите цени на пазара</li>
+                        <li class="mb-3"><i class="bi bi-check-circle text-success me-2"></i><strong>Сигурно пазаруване:</strong> Криптирани транзакции и защита на личните данни</li>
+                        <li class="mb-3"><i class="bi bi-check-circle text-success me-2"></i><strong>Отлично обслужване:</strong> Екипът ни е винаги на разположение за въпроси и съвети</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="text-center mt-5">
+                <h4 class="mb-4">Имате въпроси?</h4>
+                <a asp-controller="Contact" asp-action="Index" class="btn btn-primary btn-lg">
+                    <i class="bi bi-envelope"></i> Свържете се с нас
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .text-primary, .bi.text-primary {
+        color: #9528de !important;
+    }
+
+    .text-success, .bi.text-success {
+        color: #28a745 !important;
+    }
+
+    .btn-primary {
+        background-color: #9528de;
+        border-color: #9528de;
+    }
+
+        .btn-primary:hover {
+            background-color: #7a1fb8;
+            border-color: #7a1fb8;
+        }
+</style>

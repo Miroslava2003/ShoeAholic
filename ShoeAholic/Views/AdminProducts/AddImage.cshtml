@@ -1,0 +1,46 @@
+﻿<h2>Снимки</h2>
+
+<p><strong>@ViewBag.ShoeName</strong></p>
+
+<div class="row">
+    @foreach (var img in ViewBag.Images)
+    {
+        <div class="col-md-3 text-center mb-3">
+            <img src="@img.ImageUrl" class="img-fluid" />
+            <button type="button" class="btn btn-sm btn-danger mt-2" data-bs-toggle="modal" data-bs-target="#deleteImageModal-@img.Id">Изтрий</button>
+
+            <div class="modal fade" id="deleteImageModal-@img.Id" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Потвърждение</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">Сигурни ли сте, че искате да изтриете тази снимка?</div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отказ</button>
+                            <form asp-action="DeleteImage" method="post">
+                                <input type="hidden" name="id" value="@img.Id" />
+                                <button type="submit" class="btn btn-danger">Да, изтрий</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<hr />
+
+<h4>Добави нова снимка</h4>
+
+<form asp-action="AddImage" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="shoeId" value="@ViewBag.ShoeId" />
+    <div class="form-group">
+        <input type="file" name="image" class="form-control" required />
+    </div>
+    <br />
+    <button class="btn btn-success">Качи</button>
+    <a asp-action="Index" class="btn btn-secondary">Назад</a>
+</form>

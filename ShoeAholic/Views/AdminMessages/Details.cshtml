@@ -1,0 +1,112 @@
+﻿@model ShoeAholic.Models.ContactMessage
+@{
+    ViewData["Title"] = "Детайли на съобщение";
+}
+
+<div class="container my-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="bi bi-envelope-open"></i> Детайли на съобщение</h2>
+                <a asp-action="Index" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Назад</a>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            @if (!Model.IsRead)
+                            {
+                                <span class="badge bg-warning text-dark"><i class="bi bi-envelope-fill"></i> Непрочетено</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success"><i class="bi bi-envelope-check"></i> Прочетено</span>
+                            }
+                        </h5>
+                        <small class="text-muted">@Model.CreatedOn.ToString("dd MMMM yyyy, HH:mm")</small>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-2"><i class="bi bi-person"></i> Име:</h6>
+                            <p class="h5">@Model.Name</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-2"><i class="bi bi-envelope"></i> Имейл:</h6>
+                            <p class="h5"><a href="mailto:@Model.Email" class="text-decoration-none">@Model.Email</a></p>
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-2"><i class="bi bi-telephone"></i> Телефон:</h6>
+                            <p class="h5"><a href="tel:@Model.Phone" class="text-decoration-none">@Model.Phone</a></p>
+                        </div>
+                    </div>
+                    <hr />
+                    <h6 class="text-muted mb-3"><i class="bi bi-chat-left-text"></i> Съобщение:</h6>
+                    <div class="p-4 bg-light rounded">
+                        <p class="mb-0" style="white-space: pre-wrap;">@Model.Message</p>
+                    </div>
+                </div>
+                <div class="card-footer bg-white">
+                    <div class="d-flex justify-content-between">
+                        <div class="btn-group">
+                            @if (!Model.IsRead)
+                            {
+                                <form asp-action="MarkAsRead" method="post" class="d-inline">
+                                    <input type="hidden" name="id" value="@Model.Id" />
+                                    <button type="submit" class="btn btn-success"><i class="bi bi-check-circle"></i> Маркирай като прочетено</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <form asp-action="MarkAsUnread" method="post" class="d-inline">
+                                    <input type="hidden" name="id" value="@Model.Id" />
+                                    <button type="submit" class="btn btn-warning"><i class="bi bi-envelope"></i> Маркирай като непрочетено</button>
+                                </form>
+                            }
+                            <a href="mailto:@Model.Email?subject=Re: Вашето запитване&body=Здравейте @Model.Name,%0D%0A%0D%0A" class="btn btn-primary"><i class="bi bi-reply"></i> Отговори по имейл</a>
+                        </div>
+                        <form asp-action="Delete" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Сигурни ли сте?')"><i class="bi bi-trash"></i> Изтрий</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-4 shadow-sm">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0"><i class="bi bi-lightbulb"></i> Бърз отговор</h6>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3">Копирайте текста и го използвайте като шаблон за отговор:</p>
+                    <div class="p-3 bg-light rounded">
+                        <p class="mb-2">Здравейте <strong>@Model.Name</strong>,</p>
+                        <p class="mb-2">Благодарим Ви за запитването!</p>
+                        <p class="mb-2">[Вашият отговор тук]</p>
+                        <p class="mb-0">Поздрави,<br>ShoeAholic Team</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .btn-primary {
+        background-color: #9528de;
+        border-color: #9528de;
+    }
+
+        .btn-primary:hover {
+            background-color: #7a1fb8;
+            border-color: #7a1fb8;
+        }
+
+    .text-primary {
+        color: #9528de !important;
+    }
+</style>

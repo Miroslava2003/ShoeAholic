@@ -1,0 +1,223 @@
+﻿@model IEnumerable<ShoeAholic.Models.ContactMessage>
+@{
+    ViewData["Title"] = "Съобщения от клиенти";
+}
+
+<div class="container-fluid my-4">
+    <h2 class="mb-4"><i class="bi bi-envelope"></i> Съобщения от клиенти</h2>
+
+    <div class="mb-3">
+        <a asp-controller="AdminProducts" asp-action="Dashboard" class="btn btn-outline-secondary">← Административен панел</a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card border-primary">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Общо съобщения</h6>
+                            <h3 class="mb-0">@ViewBag.TotalMessages</h3>
+                        </div>
+                        <i class="bi bi-envelope fs-1 text-primary"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-warning">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Непрочетени</h6>
+                            <h3 class="mb-0 text-warning">@ViewBag.UnreadMessages</h3>
+                        </div>
+                        <i class="bi bi-envelope-exclamation fs-1 text-warning"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-success">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Прочетени</h6>
+                            <h3 class="mb-0 text-success">@ViewBag.ReadMessages</h3>
+                        </div>
+                        <i class="bi bi-envelope-check fs-1 text-success"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" asp-action="Index" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Търсене</label>
+                    <input type="text" name="search" class="form-control" placeholder="Име, имейл, телефон..." value="@ViewBag.Search" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Филтър</label>
+                    <select name="filter" class="form-select">
+                        <option value="all" selected="@(ViewBag.Filter == "all")">Всички</option>
+                        <option value="unread" selected="@(ViewBag.Filter == "unread")">Непрочетени</option>
+                        <option value="read" selected="@(ViewBag.Filter == "read")">Прочетени</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Брой на страница</label>
+                    <select name="pageSize" class="form-select">
+                        <option value="10" selected="@(ViewBag.PageSize == 10)">10</option>
+                        <option value="20" selected="@(ViewBag.PageSize == 20)">20</option>
+                        <option value="50" selected="@(ViewBag.PageSize == 50)">50</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2"><i class="bi bi-search"></i> Търси</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary"><i class="bi bi-x-circle"></i> Изчисти</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            @if (!Model.Any())
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-inbox display-1 text-muted"></i>
+                    <h4 class="mt-3">Няма съобщения</h4>
+                    <p class="text-muted">Все още няма получени съобщения от клиенти.</p>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 40px;"></th>
+                                <th>Име</th>
+                                <th>Имейл</th>
+                                <th>Телефон</th>
+                                <th>Съобщение</th>
+                                <th>Дата</th>
+                                <th style="width: 200px;">Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var message in Model)
+                            {
+                                <tr class="@(message.IsRead ? "" : "table-warning")">
+                                    <td class="text-center">
+                                        @if (!message.IsRead)
+                                        {
+                                            <i class="bi bi-envelope-fill text-warning" title="Непрочетено"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-envelope-open text-muted" title="Прочетено"></i>
+                                        }
+                                    </td>
+                                    <td><strong>@message.Name</strong></td>
+                                    <td><a href="mailto:@message.Email" class="text-decoration-none">@message.Email</a></td>
+                                    <td><a href="tel:@message.Phone" class="text-decoration-none">@message.Phone</a></td>
+                                    <td>
+                                        <div style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">@message.Message</div>
+                                    </td>
+                                    <td><small class="text-muted">@message.CreatedOn.ToString("dd.MM.yyyy HH:mm")</small></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <a asp-action="Details" asp-route-id="@message.Id" class="btn btn-outline-primary" title="Виж детайли"><i class="bi bi-eye"></i></a>
+                                            @if (!message.IsRead)
+                                            {
+                                                <form asp-action="MarkAsRead" method="post" class="d-inline">
+                                                    <input type="hidden" name="id" value="@message.Id" />
+                                                    <button type="submit" class="btn btn-outline-success" title="Маркирай като прочетено"><i class="bi bi-check"></i></button>
+                                                </form>
+                                            }
+                                            else
+                                            {
+                                                <form asp-action="MarkAsUnread" method="post" class="d-inline">
+                                                    <input type="hidden" name="id" value="@message.Id" />
+                                                    <button type="submit" class="btn btn-outline-warning" title="Маркирай като непрочетено"><i class="bi bi-envelope"></i></button>
+                                                </form>
+                                            }
+                                            <form asp-action="Delete" method="post" class="d-inline">
+                                                <input type="hidden" name="id" value="@message.Id" />
+                                                <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Сигурни ли сте?')" title="Изтрий"><i class="bi bi-trash"></i></button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+
+    @if (ViewBag.TotalPages > 1)
+    {
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item @(ViewBag.HasPreviousPage ? "" : "disabled")">
+                    <a class="page-link" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage - 1)" asp-route-search="@ViewBag.Search" asp-route-filter="@ViewBag.Filter" asp-route-pageSize="@ViewBag.PageSize">Предишна</a>
+                </li>
+                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                {
+                    <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-search="@ViewBag.Search" asp-route-filter="@ViewBag.Filter" asp-route-pageSize="@ViewBag.PageSize">@i</a>
+                    </li>
+                }
+                <li class="page-item @(ViewBag.HasNextPage ? "" : "disabled")">
+                    <a class="page-link" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage + 1)" asp-route-search="@ViewBag.Search" asp-route-filter="@ViewBag.Filter" asp-route-pageSize="@ViewBag.PageSize">Следваща</a>
+                </li>
+            </ul>
+        </nav>
+        <p class="text-center text-muted">Страница @ViewBag.CurrentPage от @ViewBag.TotalPages (Общо: @ViewBag.TotalItems съобщения)</p>
+    }
+</div>
+
+<style>
+    .btn-primary {
+        background-color: #9528de;
+        border-color: #9528de;
+    }
+
+        .btn-primary:hover {
+            background-color: #7a1fb8;
+            border-color: #7a1fb8;
+        }
+
+    .text-primary, .border-primary {
+        color: #9528de !important;
+        border-color: #9528de !important;
+    }
+
+    .table-warning {
+        background-color: #fff3cd !important;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #9528de;
+        border-color: #9528de;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: #9528de;
+        border-color: #9528de;
+    }
+</style>

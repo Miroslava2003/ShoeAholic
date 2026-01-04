@@ -1,0 +1,87 @@
+﻿@{
+    ViewData["Title"] = "Admin Panel";
+}
+
+<div class="container-fluid my-4">
+    <h2 class="mb-4"><i class="bi bi-speedometer2"></i> Административен панел</h2>
+
+    <div class="row g-4">
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 border-primary shadow-sm">
+                <div class="card-body text-center">
+                    <div class="mb-3"><i class="bi bi-box-seam display-4 text-primary"></i></div>
+                    <h5 class="card-title">Продукти</h5>
+                    <p class="card-text text-muted">Добавяне, редакция, размери, снимки</p>
+                    <a asp-controller="AdminProducts" asp-action="Index" class="btn btn-primary w-100"><i class="bi bi-gear"></i> Управление</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 border-success shadow-sm">
+                <div class="card-body text-center">
+                    <div class="mb-3"><i class="bi bi-people display-4 text-success"></i></div>
+                    <h5 class="card-title">Потребители</h5>
+                    <p class="card-text text-muted">Роли, изтриване</p>
+                    <a asp-controller="AdminUsers" asp-action="Index" class="btn btn-success w-100"><i class="bi bi-person-gear"></i> Управление</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 border-warning shadow-sm">
+                <div class="card-body text-center">
+                    <div class="mb-3"><i class="bi bi-cart-check display-4 text-warning"></i></div>
+                    <h5 class="card-title">Поръчки</h5>
+                    <p class="card-text text-muted">Статуси, количества</p>
+                    <a asp-controller="AdminOrders" asp-action="Dashboard" class="btn btn-warning w-100"><i class="bi bi-clipboard-check"></i> Управление</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 border-info shadow-sm">
+                <div class="card-body text-center">
+                    <div class="mb-3"><i class="bi bi-envelope-fill display-4 text-info"></i></div>
+                    <h5 class="card-title">Съобщения</h5>
+                    <p class="card-text text-muted">Контактни форми, запитвания</p>
+                    <a asp-controller="AdminMessages" asp-action="Index" class="btn btn-info w-100 text-white"><i class="bi bi-inbox"></i> Управление</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .btn-primary {
+        background-color: #9528de;
+        border-color: #9528de;
+    }
+
+        .btn-primary:hover {
+            background-color: #7a1fb8;
+            border-color: #7a1fb8;
+        }
+
+    .text-primary, .border-primary {
+        color: #9528de !important;
+        border-color: #9528de !important;
+    }
+
+    .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2) !important;
+        }
+
+    .display-4 {
+        transition: transform 0.3s ease;
+    }
+
+    .card:hover .display-4 {
+        transform: scale(1.1);
+    }
+</style>

@@ -1,0 +1,156 @@
+﻿@model ShoeAholic.Models.Order
+@using ShoeAholic.Models.Enums
+@{
+    ViewData["Title"] = $"Поръчка #{Model.Id}";
+}
+
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-box-seam"></i> Поръчка #@Model.Id</h2>
+        <div>
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary"><i class="bi bi-pencil"></i> Редактирай</a>
+            <a asp-action="Index" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Назад</a>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">@TempData["Success"]<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+    }
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Статус</h5>
+                            @switch (Model.Status)
+                            {
+                                case OrderStatus.Pending:
+                                    <h3><span class="badge bg-warning text-dark"><i class="bi bi-clock"></i> Нова поръчка</span></h3>
+                                    break;
+                                case OrderStatus.Processing:
+                                    <h3><span class="badge bg-primary"><i class="bi bi-gear"></i> В обработка</span></h3>
+                                    break;
+                                case OrderStatus.Shipped:
+                                    <h3><span class="badge bg-info"><i class="bi bi-truck"></i> Изпратена</span></h3>
+                                    break;
+                                case OrderStatus.Delivered:
+                                    <h3><span class="badge bg-success"><i class="bi bi-check-circle"></i> Доставена</span></h3>
+                                    break;
+                                case OrderStatus.Cancelled:
+                                    <h3><span class="badge bg-danger"><i class="bi bi-x-circle"></i> Отказана</span></h3>
+                                    break;
+                            }
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <h5>Дата на поръчка</h5>
+                            <p class="mb-0"><strong>@Model.CreatedOn.ToString("dd MMMM yyyy")</strong><br /><span class="text-muted">@Model.CreatedOn.ToString("HH:mm")</span></p>
+                        </div>
+                    </div>
+                    <hr />
+                    <form asp-action="ChangeStatus" method="post" class="row g-3 align-items-end">
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <div class="col-md-8">
+                            <label class="form-label fw-bold">Промени статус:</label>
+                            <select name="status" class="form-select">
+                                <option value="1" selected="@(Model.Status == OrderStatus.Pending)">Нова поръчка</option>
+                                <option value="2" selected="@(Model.Status == OrderStatus.Processing)">В обработка</option>
+                                <option value="3" selected="@(Model.Status == OrderStatus.Shipped)">Изпратена</option>
+                                <option value="4" selected="@(Model.Status == OrderStatus.Delivered)">Доставена</option>
+                                <option value="5" selected="@(Model.Status == OrderStatus.Cancelled)">Отказана</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-success w-100"><i class="bi bi-check-circle"></i> Обнови статус</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-light"><h5 class="mb-0"><i class="bi bi-bag"></i> Поръчани продукти</h5></div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr><th>Продукт</th><th>Размер</th><th>Количество</th><th>Цена</th><th>Общо</th></tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Items)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                @if (item.Shoe?.Images?.Any() ?? false)
+                                                {
+                                                    <img src="@item.Shoe.Images.First().ImageUrl" alt="@item.Shoe.Brand @item.Shoe.Model" class="me-3" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
+                                                }
+                                                <div><strong>@item.Shoe?.Brand @item.Shoe?.Model</strong><br /><small class="text-muted">@item.Shoe?.Color</small></div>
+                                            </div>
+                                        </td>
+                                        <td>@item.Size</td>
+                                        <td>@item.Quantity бр.</td>
+                                        <td>@item.Price.ToString("F2") лв.</td>
+                                        <td><strong>@((item.Price * item.Quantity).ToString("F2")) лв.</strong></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.AdminNotes))
+            {
+                <div class="card shadow-sm mb-3 border-info">
+                    <div class="card-body">
+                        <h6><i class="bi bi-journal-text"></i> Админ бележки:</h6>
+                        <p class="mb-0">@Model.AdminNotes</p>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-light"><h6 class="mb-0"><i class="bi bi-person"></i> Информация за клиента</h6></div>
+                <div class="card-body">
+                    <p class="mb-2"><strong>Име:</strong><br />@Model.FullName</p>
+                    <p class="mb-2"><strong>Телефон:</strong><br /><a href="tel:@Model.Phone">@Model.Phone</a></p>
+                    <p class="mb-0"><strong>Адрес:</strong><br />@Model.Address</p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-light"><h6 class="mb-0"><i class="bi bi-truck"></i> Доставка и плащане</h6></div>
+                <div class="card-body">
+                    <p class="mb-2"><strong>Начин на доставка:</strong><br />@(Model.DeliveryType == DeliveryType.Office ? "До офис" : "До адрес")</p>
+                    <p class="mb-0"><strong>Начин на плащане:</strong><br />@(Model.PaymentType == PaymentType.CashOnDelivery ? "Наложен платеж" : "Карта")</p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-light"><h6 class="mb-0"><i class="bi bi-cash-stack"></i> Ценова информация</h6></div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2"><span>Продукти:</span><strong>@Model.SubTotal.ToString("F2") лв.</strong></div>
+                    <div class="d-flex justify-content-between mb-2"><span>Доставка:</span><strong>@Model.DeliveryPrice.ToString("F2") лв.</strong></div>
+                    <hr />
+                    <div class="d-flex justify-content-between"><span class="fs-5">ОБЩО:</span><strong class="fs-4 text-success">@Model.TotalPrice.ToString("F2") лв.</strong></div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-danger mt-3">
+                <div class="card-header bg-danger text-white"><h6 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Опасна зона</h6></div>
+                <div class="card-body">
+                    <form asp-action="Delete" method="post" onsubmit="return confirm('Сигурни ли сте?');">
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <button type="submit" class="btn btn-danger btn-sm w-100"><i class="bi bi-trash"></i> Изтрий поръчка</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

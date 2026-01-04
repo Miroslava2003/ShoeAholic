@@ -1,0 +1,90 @@
+﻿@model ShoeAholic.Models.ViewModels.PaymentViewModel
+@{
+    ViewData["Title"] = "Плащане с карта";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white text-center py-3">
+                    <h4 class="mb-0"><i class="bi bi-credit-card-2-front"></i> Плащане с карта</h4>
+                </div>
+                <div class="card-body p-4">
+                    <div class="alert alert-info mb-4">
+                        <div class="d-flex justify-content-between align-items-center"><span>Номер на поръчка:</span><strong>#@Model.OrderId</strong></div>
+                        <div class="d-flex justify-content-between align-items-center mt-2"><span>Сума за плащане:</span><h4 class="mb-0 text-primary">@Model.Amount.ToString("F2") лв.</h4></div>
+                    </div>
+
+                    <form asp-action="Payment" method="post" id="paymentForm">
+                        <input type="hidden" asp-for="OrderId" />
+                        <input type="hidden" asp-for="Amount" />
+                        <div class="mb-3">
+                            <label asp-for="CardNumber" class="form-label"><i class="bi bi-credit-card"></i> Номер на карта</label>
+                            <input asp-for="CardNumber" class="form-control form-control-lg" placeholder="1234 5678 9012 3456" maxlength="16" oninput="formatCardNumber(this)" />
+                            <span asp-validation-for="CardNumber" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="CardHolderName" class="form-label"><i class="bi bi-person"></i> Име на картодържателя</label>
+                            <input asp-for="CardHolderName" class="form-control" placeholder="IVAN PETROV" style="text-transform: uppercase;" />
+                            <span asp-validation-for="CardHolderName" class="text-danger"></span>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ExpiryDate" class="form-label"><i class="bi bi-calendar"></i> Валидна до</label>
+                                <input asp-for="ExpiryDate" class="form-control" placeholder="ММ/ГГ" maxlength="5" oninput="formatExpiryDate(this)" />
+                                <span asp-validation-for="ExpiryDate" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="CVV" class="form-label"><i class="bi bi-shield-check"></i> CVV</label>
+                                <input asp-for="CVV" type="password" class="form-control" placeholder="123" maxlength="3" />
+                                <span asp-validation-for="CVV" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="alert alert-light border mb-4">
+                            <small class="text-muted"><i class="bi bi-lock-fill text-success"></i> Вашите данни са защитени с SSL криптиране.</small>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg" id="payButton"><i class="bi bi-check-circle"></i> Плати @Model.Amount.ToString("F2") лв.</button>
+                            <a asp-action="Checkout" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Обратно</a>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-4">
+                        <small class="text-muted d-block mb-2">Приемаме следните карти:</small>
+                        <div class="d-flex justify-content-center gap-3">
+                            <i class="bi bi-credit-card-2-front fs-3 text-primary"></i>
+                            <span class="badge bg-primary">VISA</span>
+                            <span class="badge bg-info">MasterCard</span>
+                            <span class="badge bg-success">Maestro</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert alert-warning mt-3">
+                <strong>🧪 ТЕСТОВА СРЕДА</strong><br />
+                Това е симулация. Тестови данни: <strong>Номер:</strong> 1234567890123456 | <strong>Дата:</strong> 12/25 | <strong>CVV:</strong> 123
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        function formatCardNumber(input) { input.value = input.value.replace(/\s/g, '').replace(/\D/g, ''); }
+        function formatExpiryDate(input) {
+            let value = input.value.replace(/\D/g, '');
+            if (value.length >= 2) { value = value.slice(0, 2) + '/' + value.slice(2, 4); }
+            input.value = value;
+        }
+        document.getElementById('paymentForm').addEventListener('submit', function (e) {
+            const button = document.getElementById('payButton');
+            button.disabled = true;
+            button.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Обработва се...';
+        });
+    </script>
+}

@@ -1,0 +1,25 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using ShoeAholic.Areas.Identity.Data
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<ul class="navbar-nav">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        var currentUser = await UserManager.GetUserAsync(User);
+        <ul class="navbar-nav align-items-center gap-3">
+            <li class="nav-item"><a class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index">Здравей, @currentUser.Име!</a></li>
+            <li class="nav-item"><a class="nav-link" asp-controller="Cart" asp-action="Index">🛒</a></li>
+            <li class="nav-item">
+                <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index","Home", new { area = "" })" method="post">
+                    <button type="submit" class="nav-link btn btn-link p-0">ИЗХОД</button>
+                </form>
+            </li>
+        </ul>
+    }
+    else
+    {
+        <li class="nav-item"><a class="nav-link text-dark" id="register" asp-area="Identity" asp-page="/Account/Register">РЕГИСТРАЦИЯ</a></li>
+        <li class="nav-item"><a class="nav-link text-dark" id="login" asp-area="Identity" asp-page="/Account/Login">ВХОД</a></li>
+    }
+</ul>

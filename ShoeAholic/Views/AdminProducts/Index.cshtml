@@ -1,0 +1,100 @@
+﻿@model IEnumerable<ShoeAholic.Models.Shoe>
+
+<h2>Админ панел – Обувки</h2>
+
+<div class="mb-3">
+    <a asp-controller="AdminProducts" asp-action="Dashboard" class="btn btn-outline-secondary">← Административен панел</a>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-8">
+                <input type="text" name="search" class="form-control" placeholder="Търси по марка, модел или ID..." value="@ViewBag.Search" />
+            </div>
+            <div class="col-md-2">
+                <select name="pageSize" class="form-select" onchange="this.form.submit()">
+                    <option value="10" selected="@(ViewBag.PageSize == 10)">10 на страница</option>
+                    <option value="20" selected="@(ViewBag.PageSize == 20)">20 на страница</option>
+                    <option value="50" selected="@(ViewBag.PageSize == 50)">50 на страница</option>
+                    <option value="100" selected="@(ViewBag.PageSize == 100)">100 на страница</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100"><i class="bi bi-search"></i> Търси</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<p><a asp-action="Create" class="btn btn-primary">Добави обувки</a></p>
+
+@if (ViewBag.TotalItems > 0)
+{
+    <partial name="_Pagination" />
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Марка</th>
+            <th>Модел</th>
+            <th>Категория</th>
+            <th>Цена</th>
+            <th>Размери</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var shoe in Model)
+        {
+            <tr>
+                <td>@shoe.Brand</td>
+                <td>@shoe.Model</td>
+                <td>@shoe.Category</td>
+                <td>@shoe.Price лв.</td>
+                <td>
+                    @foreach (var size in shoe.Sizes)
+                    {
+                        <span>@size.Size (@size.Quantity)</span>
+
+                        <br />
+                    }
+                </td>
+                <td>
+                    <a asp-action="AddSize" asp-route-id="@shoe.Id" class="btn btn-sm btn-info"><i class="bi bi-rulers"></i> Размери</a>
+                    <a asp-action="AddImage" asp-route-id="@shoe.Id" class="btn btn-sm btn-secondary"><i class="bi bi-image"></i> Снимки</a>
+                    <a asp-action="Edit" asp-route-id="@shoe.Id" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i> Редактирай</a>
+                    <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteShoeModal-@shoe.Id"><i class="bi bi-trash"></i> Изтрий</button>
+
+                    <div class="modal fade" id="deleteShoeModal-@shoe.Id" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Потвърждение</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Сигурни ли сте, че искате да изтриете <strong>@shoe.Brand @shoe.Model</strong>?
+                                    <br /><small class="text-danger">Това ще изтрие всички размери и снимки.</small>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отказ</button>
+                                    <form asp-action="Delete" method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="@shoe.Id" />
+                                        <button type="submit" class="btn btn-danger">Да, изтрий</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (ViewBag.TotalItems > 0)
+{
+    <div class="mt-4"><partial name="_Pagination" /></div>
+}

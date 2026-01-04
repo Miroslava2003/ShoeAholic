@@ -1,0 +1,113 @@
+﻿@page
+@model ShoeAholic.Areas.Identity.Pages.Account.RegisterModel
+@{
+    ViewData["Title"] = "Регистрация";
+}
+
+<div class="login-bg">
+    <div class="register-card">
+        <h1 class="text-center">Регистрация</h1>
+        <hr />
+
+        <form asp-route-returnUrl="@Model.ReturnUrl" method="post" novalidate>
+            
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Input.FirstName"></label>
+                    <input asp-for="Input.FirstName" class="form-control" />
+                    <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Input.LastName"></label>
+                    <input asp-for="Input.LastName" class="form-control" />
+                    <span asp-validation-for="Input.LastName" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Input.Phone"></label>
+                    <input asp-for="Input.Phone" class="form-control" />
+                    <span asp-validation-for="Input.Phone" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Input.Email"></label>
+                    <input asp-for="Input.Email" class="form-control" />
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Input.Password"></label>
+
+                    <div class="input-group">
+                        <input asp-for="Input.Password"
+                               class="form-control"
+                               id="passwordInput"
+                               type="password" />
+
+                        <span class="input-group-text"
+                              id="togglePassword"
+                              style="cursor:pointer;">
+                            <i class="bi bi-eye"></i>
+                        </span>
+                    </div>
+
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Input.ConfirmPassword"></label>
+
+                    <div class="input-group">
+                        <input asp-for="Input.ConfirmPassword"
+                               class="form-control"
+                               id="confirmPasswordInput"
+                               type="password" />
+
+                        <span class="input-group-text"
+                              id="toggleConfirmPassword"
+                              style="cursor:pointer;">
+                            <i class="bi bi-eye"></i>
+                        </span>
+                    </div>
+
+                    <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                </div>
+
+            <button type="submit" class="btn btn-primary w-100 mt-2">
+                Регистрация
+            </button>
+        </form>
+
+
+        <div class="text-center mt-3">
+            <p>Вече имате акаунт? <a asp-page="./Login">Вход</a></p>
+        </div> 
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        const passwordInput = document.getElementById("passwordInput");
+        const togglePassword = document.getElementById("togglePassword");
+        const icon = togglePassword.querySelector("i");
+
+        togglePassword.addEventListener("click", function () {
+            const type = passwordInput.type === "password" ? "text" : "password";
+            passwordInput.type = type;
+            icon.style.opacity = type === "text" ? 0.5 : 1;
+        });
+
+        const confirmPasswordInput = document.getElementById("confirmPasswordInput");
+        const toggleConfirmPassword = document.getElementById("toggleConfirmPassword");
+        const confirmIcon = toggleConfirmPassword.querySelector("i");
+
+        toggleConfirmPassword.addEventListener("click", function () {
+            const type = confirmPasswordInput.type === "password" ? "text" : "password";
+            confirmPasswordInput.type = type;
+            confirmIcon.style.opacity = type === "text" ? 0.5 : 1;
+        });
+    </script>
+}

@@ -1,0 +1,97 @@
+﻿@{
+    ViewData["Title"] = "Размери";
+    var shoeId = ViewBag.ShoeId;
+    var shoeName = ViewBag.ShoeName;
+    var sizes = ViewBag.Sizes as List<ShoeAholic.Models.ShoeSize>;
+}
+
+<div class="container my-4">
+    <h2>Размери</h2>
+    <p class="text-muted">@shoeName</p>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (sizes != null && sizes.Any())
+    {
+        <h3 class="mt-4">Налични размери</h3>
+        <table class="table table-bordered">
+            <thead>
+                <tr><th>Размер</th><th>Количество</th><th>Действия</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var size in sizes.OrderBy(s => s.Size))
+                {
+                    <tr>
+                        <td>@size.Size</td>
+                        <td>
+                            <form method="post" asp-action="EditSize" class="d-inline">
+                                <input type="hidden" name="id" value="@size.Id" />
+                                <input type="number" name="quantity" value="@size.Quantity" class="form-control form-control-sm d-inline-block" style="width: 100px;" min="0" />
+                                <button type="submit" class="btn btn-primary btn-sm">Запази</button>
+                            </form>
+                        </td>
+                        <td>
+                            <form method="post" asp-action="DeleteSize" class="d-inline">
+                                <input type="hidden" name="id" value="@size.Id" />
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Сигурни ли сте?')">Изтрий</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    <h3 class="mt-4">Добави нов размер</h3>
+    <form method="post" asp-action="AddSize">
+        <input type="hidden" name="shoeId" value="@shoeId" />
+
+        <div class="mb-3">
+            <label for="sizeStr" class="form-label">Размер</label>
+            <input type="text" class="form-control" id="sizeStr" name="sizeStr" placeholder="напр. 43,5" required pattern="^\d+([.,]\d+)?$" title="Въведете размер в формат: 36.5 или 43,5 или 42" />
+            <div class="form-text">Използвайте точка или запетая за десетичния разделител</div>
+        </div>
+
+        <div class="mb-3">
+            <label for="quantity" class="form-label">Количество</label>
+            <input type="number" class="form-control" id="quantity" name="quantity" min="0" value="1" required />
+        </div>
+
+        <button type="submit" class="btn btn-success">Добави</button>
+        <a asp-action="Index" class="btn btn-secondary">Назад</a>
+    </form>
+</div>
+
+<style>
+    .alert {
+        margin-bottom: 1.5rem;
+    }
+
+    .table td {
+        vertical-align: middle;
+    }
+
+    .btn-primary {
+        background-color: #9528de;
+        border-color: #9528de;
+    }
+
+        .btn-primary:hover {
+            background-color: #7a1fb8;
+            border-color: #7a1fb8;
+        }
+</style>

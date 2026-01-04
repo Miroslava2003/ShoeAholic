@@ -1,0 +1,101 @@
+﻿@model ShoeAholic.Models.ContactMessage
+@{
+    ViewData["Title"] = "Свържете се с нас";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h2 class="text-center mb-4"><i class="bi bi-envelope"></i> Свържете се с нас</h2>
+            <p class="text-center text-muted mb-5">Имате въпрос или предложение? Пишете ни и ние ще се свържем с Вас възможно най-скоро!</p>
+
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <form asp-action="Index" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label"></label>
+                            <input asp-for="Name" class="form-control" placeholder="Вашето име" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label"></label>
+                            <input asp-for="Email" class="form-control" type="email" placeholder="your@email.com" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Phone" class="form-label"></label>
+                            <input asp-for="Phone" class="form-control" type="tel" placeholder="+359 88 123 4567" />
+                            <span asp-validation-for="Phone" class="text-danger"></span>
+                        </div>
+                        <div class="mb-4">
+                            <label asp-for="Message" class="form-label"></label>
+                            <textarea asp-for="Message" class="form-control" rows="6" placeholder="Напишете Вашето съобщение тук..."></textarea>
+                            <span asp-validation-for="Message" class="text-danger"></span>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg"><i class="bi bi-send"></i> Изпрати съобщение</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="row mt-5">
+                <div class="col-md-4 text-center mb-3">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <i class="bi bi-geo-alt fs-1 text-primary mb-3"></i>
+                            <h5>Адрес</h5>
+                            <p class="text-muted">гр. Велико Търново<br>ул. Примерна 123</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 text-center mb-3">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <i class="bi bi-telephone fs-1 text-primary mb-3"></i>
+                            <h5>Телефон</h5>
+                            <p class="text-muted">+359 88 123 4567</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 text-center mb-3">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <i class="bi bi-clock fs-1 text-primary mb-3"></i>
+                            <h5>Работно време</h5>
+                            <p class="text-muted">Пон - Пет: 9:00 - 18:00<br>Съб: 10:00 - 14:00</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+<style>
+    .btn-primary {
+        background-color: #9528de;
+        border-color: #9528de;
+    }
+
+        .btn-primary:hover {
+            background-color: #7a1fb8;
+            border-color: #7a1fb8;
+        }
+
+    .text-primary, .bi.text-primary {
+        color: #9528de !important;
+    }
+
+    .form-control:focus {
+        border-color: #9528de;
+        box-shadow: 0 0 0 0.25rem rgba(149, 40, 222, 0.25);
+    }
+</style>
